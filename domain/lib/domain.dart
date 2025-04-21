@@ -1,0 +1,10 @@
+export 'src/entity/movie.dart';
+export 'src/entity/movie_details.dart';
+export 'src/entity/movie_genre.dart';
+export 'src/entity/page.dart';
+export 'src/entity/production_country.dart';
+export 'src/entity/result/favourite_status_result.dart';
+export 'src/entity/result/movie_details_result.dart';
+export 'src/entity/result/movie_result.dart';
+export 'src/entity/spoken_language.dart';
+export 'src/repository/movies_repository.dart';
