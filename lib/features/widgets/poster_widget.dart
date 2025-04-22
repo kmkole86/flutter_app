@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PosterWidget extends StatelessWidget {
   const PosterWidget({super.key, required this.posterPath});
 
-  final String? posterPath;
+  final String posterPath;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class PosterWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(8), // Adjust the radius as needed
         ),
         child: Image.network(
-          "https://image.tmdb.org/t/p/w500$posterPath",
+          posterPath,
           errorBuilder: (_, _, _) {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,

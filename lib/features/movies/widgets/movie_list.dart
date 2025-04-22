@@ -10,7 +10,7 @@ class EndlessMoviesListWidget extends StatefulWidget {
   final VoidCallback onRetryClicked;
   final VoidCallback onBottomOfPageReached;
 
-  final MoviesState movies;
+  final MoviesListState movies;
 
   const EndlessMoviesListWidget({
     super.key,
@@ -86,7 +86,10 @@ class MovieItemWidget extends StatelessWidget {
             children: [
               Expanded(
                 flex: 2,
-                child: PosterWidget(posterPath: movie.posterPath),
+                child: PosterWidget(
+                  posterPath:
+                      "https://image.tmdb.org/t/p/w200${movie.posterPath}",
+                ),
               ),
               SizedBox(width: 16),
               Expanded(
@@ -189,20 +192,20 @@ extension MovieUiExtensions on Movie {
   );
 }
 
-extension on MoviesState {
+extension on MoviesListState {
   List<Widget> getListTrailingWidget({required VoidCallback onRetryClicked}) {
     final List<Widget> widgets = [];
     switch (this) {
-      case MoviesStateLoading():
+      case MoviesListStateLoading():
         widgets.add(_MovieItemLoadingWidget(key: ValueKey(-1)));
-      case MoviesStateFailed():
+      case MoviesListStateFailed():
         widgets.add(
           _MovieItemFailedWidget(
             key: ValueKey(-2),
             onRetryClicked: onRetryClicked,
           ),
         );
-      case MoviesStateSuccess():
+      case MoviesListStateSuccess():
         if (nextPageCursor != null) widgets.add(_MovieItemLoadingWidget());
     }
     return widgets;

@@ -63,22 +63,30 @@ final class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     switch (event.result.fetchResult) {
       case MoviesLoading():
         emit(
-          state.copyToLoading(
-            movies:
-                event.result.fetchResult.nextPageCursor == 1
-                    ? []
-                    : event.result.cacheResult,
+          state.copyWith(
+            moviesListState: state.moviesListState.copyToLoading(
+              movies:
+                  event.result.fetchResult.nextPageCursor == 1
+                      ? []
+                      : event.result.cacheResult,
+            ),
           ),
         );
       case MoviesSuccess(nextPageCursor: final nextPageCursor):
         emit(
-          state.copyToSuccess(
-            nextPageCursor: Optional(value: nextPageCursor),
-            movies: event.result.cacheResult,
+          state.copyWith(
+            moviesListState: state.moviesListState.copyToSuccess(
+              nextPageCursor: Optional(value: nextPageCursor),
+              movies: event.result.cacheResult,
+            ),
           ),
         );
       case MoviesFailed(error: final error):
-        emit(state.copyToFailed(error: error));
+        emit(
+          state.copyWith(
+            moviesListState: state.moviesListState.copyToFailed(error: error),
+          ),
+        );
     }
   }
 
@@ -116,11 +124,12 @@ final class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     MoviesBottomOfPageReachedEvent event,
     Emitter<MoviesState> emit,
   ) {
-    if (state.isSuccess && state.nextPageCursor != null) {
+    if (state.moviesListState.isSuccess &&
+        state.moviesListState.nextPageCursor != null) {
       loadNextPage.add(
         Query(
           searchText: state.searchText,
-          nextPageCursor: state.nextPageCursor ?? 1,
+          nextPageCursor: state.moviesListState.nextPageCursor ?? 1,
         ),
       );
     }
@@ -130,11 +139,11 @@ final class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     MoviesRetryEvent event,
     Emitter<MoviesState> emit,
   ) {
-    if (state.isFailed) {
+    if (state.moviesListState.isFailed) {
       loadNextPage.add(
         Query(
           searchText: state.searchText,
-          nextPageCursor: state.nextPageCursor ?? 1,
+          nextPageCursor: state.moviesListState.nextPageCursor ?? 1,
         ),
       );
     }

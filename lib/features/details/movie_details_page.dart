@@ -71,7 +71,7 @@ class _ContentWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: ListView(
         children: [
-          PosterWidget(posterPath: movieDetails.posterPath),
+          PosterWidget(posterPath: "https://image.tmdb.org/t/p/w500${movieDetails.posterPath}"),
           Row(
             children: [
               Expanded(

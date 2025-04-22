@@ -31,68 +31,79 @@ class _MoviesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MoviesBloc, MoviesState>(
-      builder: (context, state) {
-        //handled in the main layout
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Column(
-            children: [
-              MoviesSearchWidget(initValue: state.searchText),
-              Expanded(child: _MoviesListWidget(state: state)),
-            ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0, right: 8.0, left: 8.0),
+      child: Column(
+        children: [
+          BlocBuilder<MoviesBloc, MoviesState>(
+            buildWhen:
+                (previous, current) =>
+                    previous.searchText != current.searchText,
+            builder: (context, state) {
+              return MoviesSearchWidget(initValue: state.searchText);
+            },
           ),
-        );
-      },
+          Expanded(child: _MoviesListWidget()),
+        ],
+      ),
     );
   }
 }
 
 class _MoviesListWidget extends StatelessWidget {
-  const _MoviesListWidget({required this.state, super.key});
-
-  final MoviesState state;
+  const _MoviesListWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (state.shouldShowLoadingLayout()) {
-      return GenericLoadingWidget();
-    } else if (state.shouldShowErrorLayout()) {
-      return GenericErrorWidget(
-        onRetryClicked: () {
-          context.read<MoviesBloc>().add(MoviesRetryEvent());
-        },
-      );
-    } else if (state.shouldShowNoResultLayout()) {
-      return MoviesNoSearchResultWidget();
-    } else {
-      //handled inside list
-      return EndlessMoviesListWidget(
-        onItemClicked: (int id) {
-          context.push('${MoviesPage.path}/$id');
-        },
-        onFavouriteClicked: (int id) {
-          context.read<MoviesBloc>().add(
-            ChangeMovieFavouriteStatusEvent(id: id),
+    return BlocBuilder<MoviesBloc, MoviesState>(
+      buildWhen:
+          (previous, current) =>
+              previous.moviesListState != current.moviesListState,
+      builder: (context, state) {
+        if (state.shouldShowLoadingLayout()) {
+          return GenericLoadingWidget();
+        } else if (state.shouldShowErrorLayout()) {
+          return GenericErrorWidget(
+            onRetryClicked: () {
+              context.read<MoviesBloc>().add(MoviesRetryEvent());
+            },
           );
-        },
-        onRetryClicked: () {
-          context.read<MoviesBloc>().add(MoviesRetryEvent());
-        },
-        movies: state,
-        onBottomOfPageReached: () {
-          context.read<MoviesBloc>().add(MoviesBottomOfPageReachedEvent());
-        },
-      );
-    }
+        } else if (state.shouldShowNoResultLayout()) {
+          return MoviesNoSearchResultWidget();
+        } else {
+          //handled inside list
+          return EndlessMoviesListWidget(
+            onItemClicked: (int id) {
+              context.push('${MoviesPage.path}/$id');
+            },
+            onFavouriteClicked: (int id) {
+              context.read<MoviesBloc>().add(
+                ChangeMovieFavouriteStatusEvent(id: id),
+              );
+            },
+            onRetryClicked: () {
+              context.read<MoviesBloc>().add(MoviesRetryEvent());
+            },
+            movies: state.moviesListState,
+            onBottomOfPageReached: () {
+              context.read<MoviesBloc>().add(MoviesBottomOfPageReachedEvent());
+            },
+          );
+        }
+      },
+    );
   }
 }
 
 extension on MoviesState {
-  bool shouldShowLoadingLayout() => movies.isEmpty && isLoading;
+  bool shouldShowLoadingLayout() =>
+      moviesListState.movies.isEmpty && moviesListState.isLoading;
 
-  bool shouldShowErrorLayout() => movies.isEmpty && isFailed;
+  bool shouldShowErrorLayout() =>
+      moviesListState.movies.isEmpty && moviesListState.isFailed;
 
   bool shouldShowNoResultLayout() =>
-      movies.isEmpty && isSuccess && searchText.isNotEmpty;
+      moviesListState.movies.isEmpty &&
+      moviesListState.isSuccess &&
+      searchText.isNotEmpty;
 }

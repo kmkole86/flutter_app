@@ -63,6 +63,9 @@ class _HomeBackButtonWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<HomeShellNavigationBloc, HomeShellNavigationState>(
+      buildWhen:
+          (previous, current) =>
+              previous.canPopGlobalState != current.canPopGlobalState,
       builder:
           (BuildContext context, HomeShellNavigationState state) =>
               state.canPopGlobalState
