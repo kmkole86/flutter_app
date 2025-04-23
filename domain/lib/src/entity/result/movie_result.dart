@@ -1,20 +1,22 @@
 import 'package:equatable/equatable.dart';
 
 sealed class MoviesResult extends Equatable {
-  final int? nextPageCursor;
-
-  const MoviesResult({required this.nextPageCursor});
+  const MoviesResult();
 }
 
 final class MoviesLoading extends MoviesResult {
-  const MoviesLoading({required super.nextPageCursor});
+  final int pageCursor;
+
+  const MoviesLoading({required this.pageCursor});
 
   @override
-  List<Object?> get props => [nextPageCursor];
+  List<Object?> get props => [pageCursor];
 }
 
 final class MoviesSuccess extends MoviesResult {
-  const MoviesSuccess({required super.nextPageCursor});
+  const MoviesSuccess({required this.nextPageCursor});
+
+  final int? nextPageCursor;
 
   factory MoviesSuccess.empty() => MoviesSuccess(nextPageCursor: null);
 
@@ -23,12 +25,13 @@ final class MoviesSuccess extends MoviesResult {
 }
 
 final class MoviesFailed extends MoviesResult {
+  final int pageCursor;
   final MoviesError error;
 
-  const MoviesFailed({required this.error, required super.nextPageCursor});
+  const MoviesFailed({required this.error, required this.pageCursor});
 
   @override
-  List<Object?> get props => [nextPageCursor, error];
+  List<Object?> get props => [pageCursor, error];
 }
 
 sealed class MoviesError {}

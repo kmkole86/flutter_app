@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 
 import 'package:domain/domain.dart';
 import 'package:flutter_app/features/favourites/bloc/favourites_event.dart';
@@ -47,7 +46,7 @@ final class FavouritesBloc extends Bloc<FavouritesEvent, FavouritesState> {
       case FavouriteStatusSuccess(isFavourite: final isFavourite):
       case FavouriteStatusLoading():
       case FavouriteStatusFailed():
-      //TODO implement
+        //TODO implement
         ;
     }
   }

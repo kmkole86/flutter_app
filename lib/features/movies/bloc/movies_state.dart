@@ -25,12 +25,11 @@ final class MoviesState extends Equatable {
 
 sealed class MoviesListState extends Equatable {
   final List<Movie> movies;
-  final int? nextPageCursor;
 
   factory MoviesListState.init() =>
-      MoviesListStateLoading(movies: [], nextPageCursor: 1);
+      MoviesListStateLoading(movies: [], pageCursor: 1);
 
-  const MoviesListState({required this.nextPageCursor, required this.movies});
+  const MoviesListState({required this.movies});
 
   bool get isLoading => this is MoviesListStateLoading;
 
@@ -38,84 +37,72 @@ sealed class MoviesListState extends Equatable {
 
   bool get isSuccess => this is MoviesListStateSuccess;
 
-  MoviesListState copyWith({
-    List<Movie>? movies,
-    Optional<int>? nextPageCursor,
-    MoviesError? error,
-  }) => switch (this) {
-    MoviesListStateLoading() => copyToLoading(
-      movies: movies ?? this.movies,
-      nextPageCursor: nextPageCursor,
-    ),
-    MoviesListStateFailed(error: final currentError) => copyToFailed(
-      movies: movies ?? this.movies,
-      nextPageCursor: nextPageCursor,
-      error: error ?? currentError,
-    ),
-    MoviesListStateSuccess() => copyToSuccess(
-      nextPageCursor: nextPageCursor,
-      movies: movies ?? this.movies,
-    ),
-  };
+  MoviesListStateSuccess? get asSuccessOrNull =>
+      this is MoviesListStateSuccess ? this as MoviesListStateSuccess : null;
+
+  MoviesListStateFailed? get asFailedOrNull =>
+      this is MoviesListStateFailed ? this as MoviesListStateFailed : null;
 
   MoviesListState copyToLoading({
     List<Movie>? movies,
-    Optional<int>? nextPageCursor,
+    required int pageCursor,
   }) => MoviesListStateLoading(
-    nextPageCursor:
-        nextPageCursor != null ? nextPageCursor.value : this.nextPageCursor,
+    pageCursor: pageCursor,
     movies: movies ?? this.movies,
   );
 
   MoviesListState copyToFailed({
     List<Movie>? movies,
-    Optional<int>? nextPageCursor,
+    required int pageCursor,
     required MoviesError error,
   }) => MoviesListStateFailed(
     error: error,
-    nextPageCursor:
-        nextPageCursor != null ? nextPageCursor.value : this.nextPageCursor,
+    pageCursor: pageCursor,
     movies: movies ?? this.movies,
   );
 
   MoviesListState copyToSuccess({
     List<Movie>? movies,
-    Optional<int>? nextPageCursor,
+    required Optional<int>? nextPageCursor,
   }) => MoviesListStateSuccess(
-    nextPageCursor:
-        nextPageCursor != null ? nextPageCursor.value : this.nextPageCursor,
+    nextPageCursor: nextPageCursor?.value,
     movies: movies ?? this.movies,
   );
 }
 
 final class MoviesListStateLoading extends MoviesListState {
   const MoviesListStateLoading({
-    required super.nextPageCursor,
+    required this.pageCursor,
     required super.movies,
   });
 
+  final int pageCursor;
+
   @override
-  List<Object?> get props => [movies, nextPageCursor];
+  List<Object?> get props => [movies, pageCursor];
 }
 
 final class MoviesListStateFailed extends MoviesListState {
   final MoviesError error;
+  final int pageCursor;
 
   const MoviesListStateFailed({
     required this.error,
     required super.movies,
-    required super.nextPageCursor,
+    required this.pageCursor,
   });
 
   @override
-  List<Object?> get props => [error, movies, nextPageCursor];
+  List<Object?> get props => [error, movies, pageCursor];
 }
 
 final class MoviesListStateSuccess extends MoviesListState {
   const MoviesListStateSuccess({
-    required super.nextPageCursor,
+    required this.nextPageCursor,
     required super.movies,
   });
+
+  final int? nextPageCursor;
 
   @override
   List<Object?> get props => [movies, nextPageCursor];

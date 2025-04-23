@@ -41,24 +41,28 @@ final class MoviesRepositoryImpl extends MoviesRepository {
 
   @override
   Stream<MoviesResult> fetchMoviePage({
-    required String searchText,
-    required int cursor,
+    required String text,
+    required int pageCursor,
   }) async* {
-    yield (MoviesLoading(nextPageCursor: cursor));
-    if (cursor == 1) {
+    yield (MoviesLoading(pageCursor: pageCursor));
+    if (pageCursor == 1) {
       await _databaseDataSource.clearMoviesCache();
     }
 
     final result = await _apiDataSource.fetchPage(
-      searchText: searchText,
-      cursor: cursor,
+      searchText: text,
+      cursor: pageCursor,
     );
 
     if (result.isRight) {
       await _databaseDataSource.cacheMovies(page: result.right);
-      yield (MoviesSuccess(nextPageCursor: result.right.ordinal + 1));
+
+      final bool hasMorePages = result.right.ordinal < result.right.totalPages;
+      yield (MoviesSuccess(
+        nextPageCursor: hasMorePages ? (result.right.ordinal + 1) : null,
+      ));
     } else {
-      yield (MoviesFailed(error: MoviesApiError(), nextPageCursor: cursor));
+      yield (MoviesFailed(error: MoviesApiError(), pageCursor: pageCursor));
     }
   }
 

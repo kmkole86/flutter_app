@@ -7,8 +7,8 @@ abstract class MoviesRepository {
   Stream<List<Movie>> observeMovies();
 
   Stream<MoviesResult> fetchMoviePage({
-    required String searchText,
-    required int cursor,
+    required String text,
+    required int pageCursor,
   });
 
   Stream<FavouriteStatusResult> changeMovieFavouriteStatus({required int id});

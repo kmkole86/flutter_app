@@ -12,11 +12,10 @@ import 'model.dart';
 final class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
   final MoviesRepository _moviesRepository;
 
-  final StreamController<String> searchQuery = StreamController();
-  final StreamController<Query> loadNextPage = StreamController();
+  final StreamController<Query> _query = StreamController();
 
   late StreamSubscription<MovieFetchWithCacheResult> subscription;
-  late Stream<MovieFetchWithCacheResult> searchResult;
+  late Stream<MovieFetchWithCacheResult> _result;
 
   MoviesBloc({required MoviesRepository moviesRepository})
     : _moviesRepository = moviesRepository,
@@ -29,23 +28,23 @@ final class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     on<MoviesBottomOfPageReachedEvent>(_handleMoviesBottomOfPageReachedEvent);
     on<MoviesRetryEvent>(_handleMoviesRetryEvent);
 
-    searchResult = searchQuery.stream
+    _result = _query.stream
         .debounceTime(Duration(microseconds: 300))
-        .map((searchText) => searchText.length >= 3 ? searchText : "")
+        .map(
+          (query) => query.text.length >= 3 ? query : query.copyWith(text: ""),
+        )
         .distinct()
-        .map((e) => Query(searchText: e, nextPageCursor: 1))
-        .mergeWith([loadNextPage.stream])
         .switchMap(
           (query) => _combineLatest(
             fetchResultStream: _moviesRepository.fetchMoviePage(
-              searchText: query.searchText,
-              cursor: query.nextPageCursor,
+              text: query.text,
+              pageCursor: query.pageCursor,
             ),
             cacheResultStream: _moviesRepository.observeMovies(),
           ),
         );
 
-    subscription = searchResult.listen((result) {
+    subscription = _result.listen((result) {
       add(MovieDataEvent(result: result));
     });
 
@@ -56,19 +55,17 @@ final class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     GetInitDataEvent event,
     Emitter<MoviesState> emit,
   ) {
-    searchQuery.add("");
+    _query.add(Query(text: ""));
   }
 
   void _handleMovieDataEvent(MovieDataEvent event, Emitter<MoviesState> emit) {
     switch (event.result.fetchResult) {
-      case MoviesLoading():
+      case MoviesLoading(pageCursor: final pageCursor):
         emit(
           state.copyWith(
             moviesListState: state.moviesListState.copyToLoading(
-              movies:
-                  event.result.fetchResult.nextPageCursor == 1
-                      ? []
-                      : event.result.cacheResult,
+              movies: pageCursor == 1 ? [] : event.result.cacheResult,
+              pageCursor: pageCursor,
             ),
           ),
         );
@@ -81,10 +78,13 @@ final class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
             ),
           ),
         );
-      case MoviesFailed(error: final error):
+      case MoviesFailed(error: final error, pageCursor: final pageCursor):
         emit(
           state.copyWith(
-            moviesListState: state.moviesListState.copyToFailed(error: error),
+            moviesListState: state.moviesListState.copyToFailed(
+              error: error,
+              pageCursor: pageCursor,
+            ),
           ),
         );
     }
@@ -117,19 +117,18 @@ final class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     Emitter<MoviesState> emit,
   ) {
     emit(state.copyWith(searchText: event.searchText));
-    searchQuery.add(event.searchText);
+    _query.add(Query(text: event.searchText));
   }
 
   void _handleMoviesBottomOfPageReachedEvent(
     MoviesBottomOfPageReachedEvent event,
     Emitter<MoviesState> emit,
   ) {
-    if (state.moviesListState.isSuccess &&
-        state.moviesListState.nextPageCursor != null) {
-      loadNextPage.add(
+    if (state.moviesListState.asSuccessOrNull?.nextPageCursor != null) {
+      _query.add(
         Query(
-          searchText: state.searchText,
-          nextPageCursor: state.moviesListState.nextPageCursor ?? 1,
+          text: state.searchText,
+          pageCursor: state.moviesListState.asSuccessOrNull!.nextPageCursor!,
         ),
       );
     }
@@ -139,11 +138,11 @@ final class MoviesBloc extends Bloc<MoviesEvent, MoviesState> {
     MoviesRetryEvent event,
     Emitter<MoviesState> emit,
   ) {
-    if (state.moviesListState.isFailed) {
-      loadNextPage.add(
+    if (state.moviesListState.asSuccessOrNull != null) {
+      _query.add(
         Query(
-          searchText: state.searchText,
-          nextPageCursor: state.moviesListState.nextPageCursor ?? 1,
+          text: state.searchText,
+          pageCursor: state.moviesListState.asFailedOrNull!.pageCursor,
         ),
       );
     }

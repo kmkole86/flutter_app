@@ -1,5 +1,4 @@
-import 'package:domain/src/entity/movie_details.dart';
-import 'package:domain/src/entity/result/movie_details_result.dart';
+import 'package:domain/domain.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/di/di.dart';
 import 'package:flutter_app/features/details/bloc/movie_details_event.dart';
@@ -71,7 +70,10 @@ class _ContentWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: ListView(
         children: [
-          PosterWidget(posterPath: "https://image.tmdb.org/t/p/w500${movieDetails.posterPath}"),
+          PosterWidget(
+            posterPath:
+                "https://image.tmdb.org/t/p/w500${movieDetails.posterPath}",
+          ),
           Row(
             children: [
               Expanded(

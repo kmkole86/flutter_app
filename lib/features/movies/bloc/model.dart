@@ -15,11 +15,14 @@ final class MovieFetchWithCacheResult extends Equatable {
 }
 
 final class Query extends Equatable {
-  final String searchText;
-  final int nextPageCursor;
+  final String text;
+  final int pageCursor;
 
-  const Query({required this.searchText, this.nextPageCursor = 1});
+  const Query({required this.text, this.pageCursor = 1});
+
+  Query copyWith({String? text, int? pageCursor}) =>
+      Query(text: text ?? this.text, pageCursor: pageCursor ?? this.pageCursor);
 
   @override
-  List<Object?> get props => [searchText, nextPageCursor];
+  List<Object?> get props => [text, pageCursor];
 }

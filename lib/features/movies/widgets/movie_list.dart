@@ -205,7 +205,7 @@ extension on MoviesListState {
             onRetryClicked: onRetryClicked,
           ),
         );
-      case MoviesListStateSuccess():
+      case MoviesListStateSuccess(nextPageCursor: final nextPageCursor):
         if (nextPageCursor != null) widgets.add(_MovieItemLoadingWidget());
     }
     return widgets;
