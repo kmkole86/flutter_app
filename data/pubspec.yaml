@@ -20,8 +20,10 @@ dependencies:
   collection: 1.19.1
   json_annotation: ^4.9.0
   path_provider: ^2.1.5
+  mockito: ^5.4.6
 
 dev_dependencies:
   drift_dev: ^2.26.0
   json_serializable: ^6.9.4
   build_runner: ^2.4.15
+  test: ^1.25.15
