@@ -1,16 +1,11 @@
-# flutter_app
+==>Usecase: Build proof of concept app ( not production ready ) with features: 1) search movies 2) if the query is empty show Top Rated movies 3) locally maintained movie favorite status 4) movie details
 
-A new Flutter project.
+==>Techstack: CLEAN, BLOC, DART, STREAMS/RX_DART, GO_ROUTER, GET_IT, DIO, DRIFT...
 
-## Getting Started
+==>Setup:
+Favorite status is maintained as an entry in FavoritesTable(movieId) in Db.
+==>MOVIES LIST SCREEN: movies are cached in the database, screen listen to MoviesDb INNER JOIN MoviesIndexDb LEFT JOIN FavouritesIndexDb. Since its list of movies merging of the movies from api and locally maintained favorite status is done in DATA layer.
+==>DETAILS SCREEN: details are not cached, screen fetch movie details and listen for Favourite status of movie with id from Db. Merging of the details with the favourite status is done in the PRESENTATION layer.
+==>FAVORITES SCREEN: listen to MoviesDb INNER JOIN FavoritesIndexDb
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Repository is the entry point to the Domain layer, haven't add UseCase-s since it would only act as a connection between Ui and Repo since there's not much of a business logic.
