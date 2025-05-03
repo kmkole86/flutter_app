@@ -1,8 +1,11 @@
 import 'package:equatable/equatable.dart';
 
-sealed class FavouriteStatusResult {}
+sealed class FavouriteStatusResult extends Equatable {}
 
-final class FavouriteStatusLoading extends FavouriteStatusResult {}
+final class FavouriteStatusLoading extends FavouriteStatusResult {
+  @override
+  List<Object?> get props => [];
+}
 
 final class FavouriteStatusSuccess extends FavouriteStatusResult
     with EquatableMixin {
@@ -24,11 +27,14 @@ final class FavouriteStatusFailed extends FavouriteStatusResult
   List<Object?> get props => [error];
 }
 
-sealed class FavouriteStatusError {}
+sealed class FavouriteStatusError extends Equatable {}
 
-final class FavouriteGenericError extends FavouriteStatusError {}
+final class FavouriteGenericError extends FavouriteStatusError {
+  @override
+  List<Object?> get props => [];
+}
 
-final class FavouriteApiError extends FavouriteStatusError with EquatableMixin {
+final class FavouriteApiError extends FavouriteStatusError {
   final int? errCode;
 
   FavouriteApiError({required this.errCode});

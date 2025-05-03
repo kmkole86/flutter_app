@@ -25,11 +25,14 @@ final class MovieDetailsFailed extends MovieDetailsResult with EquatableMixin {
   List<Object?> get props => [error];
 }
 
-sealed class MovieDetailsError {}
+sealed class MovieDetailsError extends Equatable {}
 
-final class MovieDetailsGenericError extends MovieDetailsError {}
+final class MovieDetailsGenericError extends MovieDetailsError {
+  @override
+  List<Object?> get props => [];
+}
 
-final class MovieDetailsApiError extends MovieDetailsError with EquatableMixin {
+final class MovieDetailsApiError extends MovieDetailsError {
   final int? errCode;
 
   MovieDetailsApiError({this.errCode});

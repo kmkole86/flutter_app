@@ -34,11 +34,14 @@ final class MoviesFailed extends MoviesResult {
   List<Object?> get props => [pageCursor, error];
 }
 
-sealed class MoviesError {}
+sealed class MoviesError extends Equatable {}
 
-final class MoviesGenericError extends MoviesError {}
+final class MoviesGenericError extends MoviesError {
+  @override
+  List<Object?> get props => [];
+}
 
-final class MoviesApiError extends MoviesError with EquatableMixin {
+final class MoviesApiError extends MoviesError {
   final int? errCode;
 
   MoviesApiError({this.errCode});

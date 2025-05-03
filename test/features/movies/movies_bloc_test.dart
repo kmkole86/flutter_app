@@ -33,7 +33,7 @@ void main() {
           ),
         ),
     act: (bloc) => bloc.add(MoviesBottomOfPageReachedEvent()),
-    wait: const Duration(milliseconds: 2000),
+    wait: const Duration(milliseconds: 500),
     verify: (_) {
       verify(repository.fetchMoviePage(text: "fun", pageCursor: 2));
     },
@@ -48,7 +48,7 @@ void main() {
           moviesListState: MoviesListStateLoading(pageCursor: 2, movies: []),
         ),
     act: (bloc) => bloc.add(MoviesBottomOfPageReachedEvent()),
-    wait: const Duration(milliseconds: 2000),
+    wait: const Duration(milliseconds: 500),
     verify: (_) {
       verifyNever(repository.fetchMoviePage(text: "fun", pageCursor: 2));
     },
@@ -97,7 +97,7 @@ void main() {
           ),
         ),
     act: (bloc) => bloc.add(MoviesBottomOfPageReachedEvent()),
-    wait: const Duration(milliseconds: 2000),
+    wait: const Duration(milliseconds: 500),
     expect:
         () => <MoviesState>[
           MoviesState(
@@ -139,7 +139,7 @@ void main() {
           ),
         ),
     act: (bloc) => bloc.add(MoviesBottomOfPageReachedEvent()),
-    wait: const Duration(milliseconds: 2000),
+    wait: const Duration(milliseconds: 500),
     expect:
         () => <MoviesState>[
           MoviesState(
@@ -155,5 +155,17 @@ void main() {
             ),
           ),
         ],
+  );
+
+  blocTest<MoviesBloc, MoviesState>(
+    'should change favourite status on user action',
+    build: () {
+      return MoviesBloc(moviesRepository: repository);
+    },
+    act: (bloc) => bloc.add(ChangeMovieFavouriteStatusEvent(id: 5)),
+    wait: const Duration(milliseconds: 500),
+    verify: (_) {
+      verify(repository.changeMovieFavouriteStatus(id: 5));
+    },
   );
 }
