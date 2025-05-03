@@ -1,6 +1,6 @@
 ==>Usecase: Build proof of concept app ( not production ready ) with features: 1) search movies 2) if the query is empty show Top Rated movies 3) locally maintained movie favorite status 4) movie details
 
-==>Techstack: CLEAN, BLOC, DART, STREAMS/RX_DART, GO_ROUTER, GET_IT, DIO, DRIFT...
+==>Techstack: CLEAN, BLOC, DART, STREAMS/RX_DART, GO_ROUTER, GET_IT, DIO, DRIFT, MOCKITO, BLOC_TEST, UNIT_TEST...
 
 ==>Setup:
 Favorite status is maintained as an entry in FavoritesTable(movieId) in Db.
