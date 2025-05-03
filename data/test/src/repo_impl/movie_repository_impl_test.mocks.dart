@@ -183,19 +183,4 @@ class MockMovieDatabaseDataSource extends _i1.Mock
             returnValueForMissingStub: _i3.Stream<bool>.empty(),
           )
           as _i3.Stream<bool>);
-
-  @override
-  String bla() =>
-      (super.noSuchMethod(
-            Invocation.method(#bla, []),
-            returnValue: _i7.dummyValue<String>(
-              this,
-              Invocation.method(#bla, []),
-            ),
-            returnValueForMissingStub: _i7.dummyValue<String>(
-              this,
-              Invocation.method(#bla, []),
-            ),
-          )
-          as String);
 }

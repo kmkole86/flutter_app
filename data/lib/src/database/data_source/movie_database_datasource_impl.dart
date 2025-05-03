@@ -47,8 +47,4 @@ final class MovieDatabaseDataSourceImpl extends MovieDatabaseDataSource {
 
   @override
   Future<List<MovieWithFavouriteData>> getMovies() => _database.getMovies();
-
-
-  @override
-  String bla() => "bla";
 }

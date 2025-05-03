@@ -95,8 +95,7 @@ void main() {
         ),
       ).thenAnswer((_) async => Right(_page()));
 
-      final result =
-          await repository.fetchMoviePage(text: "fun", pageCursor: 1).toList();
+      await repository.fetchMoviePage(text: "fun", pageCursor: 1).toList();
 
       verify(databaseDataSource.cacheMovies(page: _page()));
     },
